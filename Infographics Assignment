@@ -1,0 +1,153 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load csv file
+
+
+Land_Use_df = pd.read_csv('Land_Data.csv')
+
+# Filtering data for Agricultural land area and selected countries
+agricultural_land = Land_Use_df[Land_Use_df['Series Name'] == 'Agricultural land (sq. km)']
+
+countries = ['Brazil', 'China', 'India', 'Russian Federation', 'United States']
+
+agricultural_land = agricultural_land[agricultural_land['Country Name'].isin(countries)]
+
+# Data for plotting, also transpose data
+years = agricultural_land.columns[3:]
+agricultural_land.set_index('Country Name', inplace=True)
+agricultural_plot = agricultural_land[years].T
+
+# Filter data for Arable land and Permanent cropland
+arable_cropland_df = Land_Use_df[Land_Use_df['Series Name'].isin(['Arable land (% of land area)', 'Permanent cropland (% of land area)'])]
+
+# Pivot the data for plotting
+arable_cropland_pivot = arable_cropland_df.pivot(index='Country Name', columns='Series Name', values='2020')
+
+# Filter data for Forest area and selected countries
+forest_area_df = Land_Use_df[Land_Use_df['Series Name'] == 'Forest area (% of land area)']
+forest_area_df = forest_area_df[forest_area_df['Country Name'].isin(countries)]
+
+# Pivot the data for plotting
+forest_area_pivot = forest_area_df.pivot(index='Country Name', columns='Series Name', values=['1995', '2000', '2005', '2010', '2015', '2020'])
+
+# plots size for each group
+fig, axes = plt.subplots(2, 2, figsize=(12, 9))  
+
+# Adjusting the layout
+plt.tight_layout(rect=[0, 0.15, 1, 1])
+
+# Title of infographics
+plt.suptitle("""Examining Transformations in Agricultural Landscape and Land Use Management; 
+                           A Decade in Review(1995 -2020)""", fontsize=13, fontweight='bold', y=1.05)
+
+# Line chart: Changes in agricultural land trend in sq.km (1995 - 2020)
+sns.set_style('darkgrid')
+for country in countries:
+    axes[0, 0].plot(agricultural_plot.index, agricultural_plot[country], label=country, marker='o')
+
+    
+
+ # Subtitle
+subtitle_agricultural_land = """Highlighting Trends in Agricultural Land Dynamics 
+                                of Selected Countries from 1995 to 2020"""
+axes[0, 0].text(0.5, 1.09, subtitle_agricultural_land, ha='center', va='center', fontsize=10, fontweight='bold', transform=axes[0, 0].transAxes, color='green')
+   
+    
+    
+axes[0, 0].set_xlabel('Year', fontsize=7, fontweight='bold')
+axes[0, 0].set_ylabel('Agricultural Land (sq. km)', fontsize=10, fontweight='bold')
+axes[0, 0].legend(fontsize=6)
+axes[0, 0].grid(True)
+axes[0, 0].legend(fontsize=6)
+axes[0, 0].grid(True)
+
+# Adjusting x-axis ticks
+plt.tick_params(axis='x', labelsize=12)
+
+# Bar chart: Arable land and Permanent Cropland Comparison
+arable_cropland_pivot.plot(kind='bar', stacked=True, ax=axes[0, 1], rot=45)
+
+
+# Subtitle
+subtitle_arable_cropland = """Percentage Distribution for Selected Countries
+                              Comparing Arable Land and Permanent Cropland"""
+axes[0, 1].text(0.6, 1.08, subtitle_arable_cropland, ha='center', va='bottom', fontsize=10, fontweight='bold', transform=axes[0, 1].transAxes, color='green')
+
+axes[0, 1].set_xlabel('Country', fontsize=7, fontweight='bold')
+axes[0, 1].set_ylabel('Percentage of Land Area', fontsize=10, fontweight='bold')
+axes[0, 1].legend(title='Land Type', fontsize=6)
+
+# Area chart: Changes in Forest Area Over Time
+forest_area_pivot.plot(kind='area', ax=axes[1, 0], rot=45)
+
+
+# Subtitle
+subtitle_forest_area = """Percentage Change in Forest Area of Selected
+                          Countries Over a Period of Time"""
+axes[1, 0].text(0.6, 1.06, subtitle_forest_area, ha='center', va='bottom', fontsize=10, fontweight='bold', transform=axes[1, 0].transAxes, color='green')
+
+axes[1, 0].set_xlabel('Country', fontsize=6, fontweight='bold')
+axes[1, 0].set_ylabel('Forest Area (% of land area)', fontsize=6, fontweight='bold')
+axes[1, 0].legend(title='Country', loc='upper center', fontsize=6)
+
+
+# Filter data for Land area for selected countries
+land_area_df = Land_Use_df[Land_Use_df['Series Name'] == 'Land area (sq. km)']
+land_area_df = land_area_df[land_area_df['Country Name'].isin(countries)]
+
+# Pivot the data for plotting
+land_area_pivot = land_area_df.pivot(index='Country Name', columns='Series Name', values=['1995', '2000', '2005', '2010', '2015', '2020'])
+
+# Line chart: Land Area Dynamics (1995 - 2020)
+sns.set_style('darkgrid')
+land_area_pivot.plot(ax=axes[1, 1], marker='o', linestyle='-', color='green', label='Land Area')
+
+# Subtitle
+subtitle = """Changes in Land Usage and Advocating
+for Susutainable Land Management """
+axes[1, 1].text(0.6, 1.06, subtitle, ha='center', va='bottom', fontsize=10, fontweight='bold', transform=axes[1, 1].transAxes, color='green')
+
+axes[1, 1].set_xlabel('Country', fontsize=8, fontweight='bold')
+axes[1, 1].set_ylabel('Land Area (sq. km)', fontsize=10, fontweight='bold')
+
+axes[1, 1].legend(loc='upper left', fontsize=8)
+axes[1, 1].grid(True)
+
+# Rotate x-axis
+axes[1, 1].tick_params(axis='x', labelrotation=30)
+
+#Description
+description_text = """BRIEF DESCRIPTION
+
+This visualisation illustrates the global collective efforts towards sustainable
+land practices, where nations actively contribute to the  
+brodal goal of acheiving environmental and future prosperiity. 
+1. The line chart shows changes in Agricultural land revealing a remarkable
+shift over the past two decades, with Brazil experiencing a substantial 30% 
+increase in agricultural land, emphasizing its key role in global food production.
+2. The Bar Chart comparing Arable Land and Permanent Cropland highlights China's
+strategic land use, allocating 60% to arable land and 10% to permanent cropland,
+indicating a balanced approach to agricultural sustainability.
+3. The Area Chart depicting Changes in Forest Area shows Russia's commitment to
+environmental conservation, displaying 15% increase in forest area from 1995 to
+2020, contributing to global biodiversity efforts.
+4. The Line Chart detailing shift in Land area, shows the United States efforts,
+demonstrating a 10% reduction in land usage over the years, reflecting a 
+sustainable land management approach..
+
+""" 
+
+axes[1, 0].text(0.9, -0.9, description_text, ha='left', va='center', fontsize=12, fontweight='normal', transform=axes[1, 0].transAxes)
+
+
+
+plt.subplots_adjust(left=0.1, right=0.8, bottom=0.1, top=0.94, wspace=0.4, hspace=0.9)
+
+# Add full name and student ID
+full_name = "Iwerumor Blessing Nkoyeasua"
+student_id = "22069644"
+plt.figtext(0.4, -0.3, f"Name:{full_name}\nStudent ID: {student_id}", fontsize=8, ha='right', va='top')
+
+plt.show()
